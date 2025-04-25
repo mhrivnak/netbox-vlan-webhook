@@ -1,0 +1,16 @@
+- name: Configure port on Cisco switch
+  hosts: "{{ target_host }}"
+  gather_facts: no
+  collections:
+    - cisco.ios
+
+  tasks:
+    - name: Configure interface
+      ios_config:
+        lines:
+          - description {{ port_name }}
+          - switchport mode access
+          - switchport access vlan {{ vlan_id }}
+          - spanning-tree portfast
+        parents: interface {{ interface }}
+

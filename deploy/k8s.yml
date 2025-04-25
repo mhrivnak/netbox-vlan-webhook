@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbox-vlan-webhook
+  labels:
+    name: netbox-vlan-webhook
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: netbox-vlan-webhook
+  template:
+    metadata:
+      labels:
+        app: netbox-vlan-webhook
+    spec:
+      containers:
+      - name: netbox-vlan-webhook
+        image: quay.io/mhrivnak/netbox-vlan-webhook:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 10
+        volumeMounts:
+          - mountPath: "/data/inventory/"
+            name: inventory
+            readOnly: true
+      volumes:
+        - name: inventory
+          secret:
+            secretName: switch-inventory
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netbox-vlan-webhook
+spec:
+  selector:
+    app: netbox-vlan-webhook
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
