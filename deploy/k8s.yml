@@ -18,6 +18,8 @@ spec:
       - name: netbox-vlan-webhook
         image: quay.io/mhrivnak/netbox-vlan-webhook:latest
         imagePullPolicy: Always
+        command: ["ansible-rulebook"]
+        args: ["--rulebook", "/data/rulebook.yml", "--inventory", "/data/inventory/inventory.yml"]
         ports:
         - containerPort: 5000
         readinessProbe:
