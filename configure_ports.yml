@@ -5,12 +5,21 @@
     - cisco.ios
 
   tasks:
-    - name: Configure interface
+    # Turn off the interface briefly so that when it turns back on, the client
+    # acquires a new DHCP lease.
+    - name: Turn off interface
+      ios_config:
+        lines:
+          - shutdown
+        parents: interface {{ interface }}
+
+    - name: Configure and turn on interface
       ios_config:
         lines:
           - description {{ port_name }}
           - switchport mode access
           - switchport access vlan {{ vlan_id }}
           - spanning-tree portfast
+          - no shutdown
         parents: interface {{ interface }}
 
