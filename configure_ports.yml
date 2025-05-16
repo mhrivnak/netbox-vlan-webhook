@@ -13,6 +13,10 @@
           - shutdown
         parents: interface {{ interface }}
 
+    - name: wait 10s so host gives up its DHCP lease
+      ansible.builtin.pause:
+        seconds: 10
+
     - name: Configure and turn on interface
       ios_config:
         lines:
